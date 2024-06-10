@@ -20,8 +20,8 @@ var DB *gorm.DB
 const str = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
 
 func Register(c *gin.Context) {
-	dburl := "../golesson/conf/config.json"
-	DB = dao.Conn(dburl)
+
+	DB = dao.Conn()
 	var userInfo UserInfo
 
 	c.BindJSON(&userInfo)

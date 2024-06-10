@@ -14,6 +14,7 @@ func StartGin() {
 	{
 		v1.POST("/login", post.Login)
 		v1.POST("/register", post.Register)
+		v1.POST("/updateInfo", post.UpdateInfo)
 
 	}
 	v2 := r.Group("/v2")

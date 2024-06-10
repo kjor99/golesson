@@ -8,8 +8,8 @@ import (
 )
 
 func Login(c *gin.Context) {
-	dburl := "../golesson/conf/config.json"
-	DB = dao.Conn(dburl)
+
+	DB = dao.Conn()
 
 	var userInfo UserInfo
 
