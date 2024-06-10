@@ -13,6 +13,7 @@ func StartGin() {
 
 	{
 		v1.POST("/login", post.Login)
+		v1.POST("/register", post.Register)
 
 	}
 	v2 := r.Group("/v2")
