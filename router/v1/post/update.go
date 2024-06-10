@@ -5,42 +5,62 @@ import (
 	"github.com/kjor99/golesson/dao"
 )
 
-// 修改密码的入参比注册多一个新密码参数
-type UpdateUserInfo struct {
-	UserInfo
-	NewPassword string `gorm:"NewPassword"`
-}
-
 func UpdateInfo(c *gin.Context) {
 
 	DB = dao.Conn()
 	var updateUserInfo UpdateUserInfo
-
+	var res Respons
 	c.BindJSON(&updateUserInfo)
 	defer DB.Close()
 
 	if len(updateUserInfo.Telphone) != 11 {
+		res.code = -1
+		res.massage = "手机号码必须为11位"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 
-		c.JSON(403, "手机号码必须为11位")
 		return
 	}
 	if len(updateUserInfo.Password) < 6 {
-		c.JSON(403, "密码为空或者少于6位数")
+		res.code = -1
+		res.massage = "密码为空或者少于6位数"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 		return
 	}
 	db := DB.Where("telphone=? and password=?", updateUserInfo.Telphone, updateUserInfo.Password).First(&UserInfo{})
 	if db.RowsAffected == 0 {
-		c.JSON(403, "账号或者密码错误")
+		res.code = -1
+		res.massage = "账号或者密码错误"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 	}
 	//当密码与账号匹配时才能修改密码
 	if db.RowsAffected == 1 {
 
 		db = DB.Model(&UserInfo{}).Update("password", updateUserInfo.NewPassword)
 		if db.RowsAffected == 1 {
-			c.JSON(200, "密码修改成功")
+			res.code = 0
+			res.massage = "密码修改成功"
+			c.JSON(200, gin.H{
+				"code":    res.code,
+				"message": res.massage,
+			})
 
 		} else {
-			c.JSON(403, "密码修改失败")
+
+			res.code = -1
+			res.massage = "密码修改失败"
+			c.JSON(200, gin.H{
+				"code":    res.code,
+				"message": res.massage,
+			})
 		}
 
 	}

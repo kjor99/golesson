@@ -9,12 +9,6 @@ import (
 	"github.com/kjor99/golesson/dao"
 )
 
-type UserInfo struct {
-	Username string `gorm:"username"`
-	Telphone string `gorm:"telphone"`
-	Password string `gorm:"password"`
-}
-
 var DB *gorm.DB
 
 const str = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
@@ -23,30 +17,51 @@ func Register(c *gin.Context) {
 
 	DB = dao.Conn()
 	var userInfo UserInfo
+	var res Respons
 
 	c.BindJSON(&userInfo)
 	defer DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
-
-		c.JSON(403, "手机号码必须为11位")
+		res.code = -1
+		res.massage = "手机号码必须为11位"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 		return
 	}
 	if len(userInfo.Password) < 6 {
-		c.JSON(403, "密码为空或者少于6位数")
+		res.code = -1
+		res.massage = "密码为空或者少于6位数"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
+
 		return
 	}
 	if len(userInfo.Username) == 0 {
 		userInfo.Username = randStr(10)
 	}
-	DB.AutoMigrate(&UserInfo{})
+	DB.AutoMigrate(&userInfo)
 	fmt.Print("----------")
-	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&UserInfo{})
+	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
 	if db.RowsAffected == 0 {
-		c.JSON(403, "此手机已注册")
+		res.code = -1
+		res.massage = "该手机已注册"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 	}
 	if db.RowsAffected == 1 {
-		c.JSON(200, "注册成功")
+		res.code = 0
+		res.massage = "注册成功"
+		c.JSON(200, gin.H{
+			"code":     res.code,
+			"masssage": res.massage,
+		})
 	}
 
 }

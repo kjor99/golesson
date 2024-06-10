@@ -13,26 +13,47 @@ func Login(c *gin.Context) {
 
 	var userInfo UserInfo
 
+	var res Respons
 	c.BindJSON(&userInfo)
 	defer DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
+		res.code = -1
+		res.massage = "手机号码必须为11位"
 
-		c.JSON(403, "手机号码必须为11位")
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 		return
 	}
 	if len(userInfo.Password) < 6 {
-		c.JSON(403, "密码为空或者少于6位数")
+		res.code = -1
+		res.massage = "密码为空或者少于6位数"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 		return
 	}
 	DB.AutoMigrate(&UserInfo{})
 	fmt.Print("----------")
 	db := DB.Where("telphone=? and password=?", userInfo.Telphone, userInfo.Password).First(&userInfo)
 	if db.RowsAffected == 0 {
-		c.JSON(403, "账号或者密码错误")
+		res.code = -1
+		res.massage = "账号或者密码错误"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 	}
 	if db.RowsAffected == 1 {
-		c.JSON(200, "登录成功")
+		res.code = 0
+		res.massage = "登录成功"
+		c.JSON(200, gin.H{
+			"code":    res.code,
+			"message": res.massage,
+		})
 	}
 
 }
