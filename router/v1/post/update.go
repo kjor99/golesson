@@ -1,12 +1,11 @@
 package post
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/kjor99/golesson/dao"
 )
 
+// 修改密码的入参比注册多一个新密码参数
 type UpdateUserInfo struct {
 	UserInfo
 	NewPassword string `gorm:"NewPassword"`
@@ -15,7 +14,6 @@ type UpdateUserInfo struct {
 func UpdateInfo(c *gin.Context) {
 
 	DB = dao.Conn()
-	var userInfo UserInfo
 	var updateUserInfo UpdateUserInfo
 
 	c.BindJSON(&updateUserInfo)
@@ -30,14 +28,14 @@ func UpdateInfo(c *gin.Context) {
 		c.JSON(403, "密码为空或者少于6位数")
 		return
 	}
-	fmt.Print("----------")
-	db := DB.Where("telphone=? and password=?", updateUserInfo.Telphone, updateUserInfo.Password).First(&userInfo)
+	db := DB.Where("telphone=? and password=?", updateUserInfo.Telphone, updateUserInfo.Password).First(&UserInfo{})
 	if db.RowsAffected == 0 {
 		c.JSON(403, "账号或者密码错误")
 	}
+	//当密码与账号匹配时才能修改密码
 	if db.RowsAffected == 1 {
 
-		db = DB.Model(&userInfo).Update("password", updateUserInfo.NewPassword)
+		db = DB.Model(&UserInfo{}).Update("password", updateUserInfo.NewPassword)
 		if db.RowsAffected == 1 {
 			c.JSON(200, "密码修改成功")
 

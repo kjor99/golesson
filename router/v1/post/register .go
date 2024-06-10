@@ -41,7 +41,7 @@ func Register(c *gin.Context) {
 	}
 	DB.AutoMigrate(&UserInfo{})
 	fmt.Print("----------")
-	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
+	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&UserInfo{})
 	if db.RowsAffected == 0 {
 		c.JSON(403, "此手机已注册")
 	}
