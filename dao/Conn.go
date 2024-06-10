@@ -33,10 +33,10 @@ func Conn() *gorm.DB {
 	user := conf.Mysql.User
 	password := conf.Mysql.Password
 	dbname := conf.Mysql.Dbname
-	fmt.Printf("conf: %v\n", &conf)
+
 	dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, dbname)
 	//("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", user, password, host, port, dbname)
-	fmt.Printf("dns: %v\n", dns)
+
 	db, err := gorm.Open("mysql", dns)
 	if err != nil {
 		fmt.Printf("数据库操作err: %v\n", err)

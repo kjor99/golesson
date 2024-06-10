@@ -1,7 +1,6 @@
 package post
 
 import (
-	"fmt"
 	"math/rand"
 
 	"github.com/gin-gonic/gin"
@@ -45,7 +44,6 @@ func Register(c *gin.Context) {
 		userInfo.Username = randStr(10)
 	}
 	DB.AutoMigrate(&userInfo)
-	fmt.Print("----------")
 	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
 	if db.RowsAffected == 0 {
 		res.code = -1
@@ -71,7 +69,6 @@ func randStr(n int) string {
 	for i := range b {
 		b[i] = str[rand.Int63()%int64(len(str))]
 	}
-	fmt.Printf("b: %v\n", b)
 	return string(b)
 
 }
