@@ -2,7 +2,6 @@ package post
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 
 	"github.com/gin-gonic/gin"
@@ -20,17 +19,13 @@ var DB *gorm.DB
 
 const str = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
 
-func init() {
+func Register(c *gin.Context) {
 	dburl := "../golesson/conf/config.json"
 	DB = dao.Conn(dburl)
-}
-
-func Register(c *gin.Context) {
-
 	var userInfo UserInfo
 
 	c.BindJSON(&userInfo)
-	log.Default()
+	defer DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
 
@@ -43,8 +38,6 @@ func Register(c *gin.Context) {
 	}
 	if len(userInfo.Username) == 0 {
 		userInfo.Username = randStr(10)
-		c.JSON(200, userInfo.Username)
-		return
 	}
 	DB.AutoMigrate(&UserInfo{})
 	fmt.Print("----------")

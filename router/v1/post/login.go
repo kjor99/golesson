@@ -2,23 +2,19 @@ package post
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kjor99/golesson/dao"
 )
 
-func init() {
+func Login(c *gin.Context) {
 	dburl := "../golesson/conf/config.json"
 	DB = dao.Conn(dburl)
-}
-
-func Login(c *gin.Context) {
 
 	var userInfo UserInfo
 
 	c.BindJSON(&userInfo)
-	log.Default()
+	defer DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
 
@@ -37,12 +33,6 @@ func Login(c *gin.Context) {
 	}
 	if db.RowsAffected == 1 {
 		c.JSON(200, "登录成功")
-	}
-
-	if len(userInfo.Username) == 0 {
-		userInfo.Username = randStr(10)
-		c.JSON(200, userInfo.Username)
-		return
 	}
 
 }
