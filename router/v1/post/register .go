@@ -1,9 +1,7 @@
 package post
 
 import (
-	"fmt"
 	"math/rand"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -50,8 +48,7 @@ func Register(c *gin.Context) {
 	DB.AutoMigrate(&userInfo)
 	//手机号码加密
 	userInfo.Password = utils.ToMd5(userInfo.Password)
-	userInfo.CreateTime = time.Now()
-	fmt.Printf("userInfo.CreateTime: %v\n", userInfo.CreateTime)
+
 	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
 	if db.RowsAffected == 0 {
 		res.code = -1

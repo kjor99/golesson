@@ -1,9 +1,6 @@
 package post
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/kjor99/golesson/dao"
 	"github.com/kjor99/golesson/utils"
@@ -36,10 +33,9 @@ func UpdatePsw(c *gin.Context) {
 		})
 		return
 	}
-	updateUserInfo.UpdateTime = time.Now()
 	updateUserInfo.NewPassword = utils.ToMd5(updateUserInfo.NewPassword)
 	updateUserInfo.Password = utils.ToMd5(updateUserInfo.Password)
-	fmt.Printf("updateUserInfo.UpdateTime: %v\n", updateUserInfo.UpdateTime)
+
 	db := DB.Where("telphone=? and password=?", updateUserInfo.Telphone, updateUserInfo.Password).First(&UserInfo{})
 	if db.RowsAffected == 0 {
 		res.code = -1
@@ -51,7 +47,7 @@ func UpdatePsw(c *gin.Context) {
 	}
 	//当密码与账号匹配时才能修改密码
 	if db.RowsAffected == 1 {
-		db = DB.Model(&UserInfo{}).Updates(UserInfo{Password: updateUserInfo.NewPassword, UpdateTime: updateUserInfo.UpdateTime})
+		db = DB.Model(&UserInfo{}).Updates(UserInfo{Password: updateUserInfo.NewPassword})
 		if db.RowsAffected == 1 {
 			res.code = 0
 			res.massage = "密码修改成功"
