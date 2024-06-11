@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kjor99/golesson/readConf"
-	"github.com/kjor99/golesson/router/v1/post"
+	"github.com/kjor99/golesson/router/api/v1/post"
 )
 
 func StartGin() {
