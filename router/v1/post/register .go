@@ -12,28 +12,26 @@ const str = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
 
 func Register(c *gin.Context) {
 
-	dao.DB = dao.Conn()
-	var userInfo UserInfo
-	var res Respons
+	var userInfo utils.UserInfo
+	var res utils.Respons
 
 	c.BindJSON(&userInfo)
-	defer dao.DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
-		res.code = -1
-		res.massage = "手机号码必须为11位"
+		res.Code = -1
+		res.Massage = "手机号码必须为11位"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 		return
 	}
 	if len(userInfo.Password) < 6 {
-		res.code = -1
-		res.massage = "密码为空或者少于6位数"
+		res.Code = -1
+		res.Massage = "密码为空或者少于6位数"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 
 		return
@@ -48,20 +46,20 @@ func Register(c *gin.Context) {
 
 	db := dao.DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
 	if db.RowsAffected == 0 {
-		res.code = -1
-		res.massage = "该手机已注册"
+		res.Code = -1
+		res.Massage = "该手机已注册"
 
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 	}
 	if db.RowsAffected == 1 {
-		res.code = 0
-		res.massage = "注册成功"
+		res.Code = 0
+		res.Massage = "注册成功"
 		c.JSON(200, gin.H{
-			"code":     res.code,
-			"masssage": res.massage,
+			"Code":     res.Code,
+			"masssage": res.Massage,
 		})
 	}
 

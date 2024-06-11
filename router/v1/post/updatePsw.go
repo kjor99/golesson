@@ -8,61 +8,59 @@ import (
 
 func UpdatePsw(c *gin.Context) {
 
-	dao.DB = dao.Conn()
-	var updateUserInfo UpdateUserInfo
-	var res Respons
+	var updateUserInfo utils.UpdateUserInfo
+	var res utils.Respons
 	c.BindJSON(&updateUserInfo)
-	defer dao.DB.Close()
 
 	if len(updateUserInfo.Telphone) != 11 {
-		res.code = -1
-		res.massage = "手机号码必须为11位"
+		res.Code = -1
+		res.Massage = "手机号码必须为11位"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 
 		return
 	}
 	if len(updateUserInfo.Password) < 6 {
-		res.code = -1
-		res.massage = "密码为空或者少于6位数"
+		res.Code = -1
+		res.Massage = "密码为空或者少于6位数"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 		return
 	}
 	updateUserInfo.NewPassword = utils.ToMd5(updateUserInfo.NewPassword)
 	updateUserInfo.Password = utils.ToMd5(updateUserInfo.Password)
 
-	db := dao.DB.Where("telphone=? and password=?", updateUserInfo.Telphone, updateUserInfo.Password).First(&UserInfo{})
+	db := dao.DB.Where("telphone=? and password=?", updateUserInfo.Telphone, updateUserInfo.Password).First(&utils.UserInfo{})
 	if db.RowsAffected == 0 {
-		res.code = -1
-		res.massage = "账号或者密码错误"
+		res.Code = -1
+		res.Massage = "账号或者密码错误"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 	}
 	//当密码与账号匹配时才能修改密码
 	if db.RowsAffected == 1 {
-		db = dao.DB.Model(&UserInfo{}).Updates(UserInfo{Password: updateUserInfo.NewPassword})
+		db = dao.DB.Model(&utils.UserInfo{}).Updates(utils.UserInfo{Password: updateUserInfo.NewPassword})
 		if db.RowsAffected == 1 {
-			res.code = 0
-			res.massage = "密码修改成功"
+			res.Code = 0
+			res.Massage = "密码修改成功"
 			c.JSON(200, gin.H{
-				"code":    res.code,
-				"message": res.massage,
+				"Code":    res.Code,
+				"message": res.Massage,
 			})
 
 		} else {
 
-			res.code = -1
-			res.massage = "密码修改失败"
+			res.Code = -1
+			res.Massage = "密码修改失败"
 			c.JSON(200, gin.H{
-				"code":    res.code,
-				"message": res.massage,
+				"Code":    res.Code,
+				"message": res.Massage,
 			})
 		}
 

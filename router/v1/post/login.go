@@ -8,47 +8,46 @@ import (
 
 func Login(c *gin.Context) {
 
-	var userInfo UserInfo
+	var userInfo utils.UserInfo
 
-	var res Respons
+	var res utils.Respons
 	c.BindJSON(&userInfo)
-	defer dao.DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
-		res.code = -1
-		res.massage = "手机号码必须为11位"
+		res.Code = -1
+		res.Massage = "手机号码必须为11位"
 
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 		return
 	}
 	if len(userInfo.Password) < 6 {
-		res.code = -1
-		res.massage = "密码为空或者少于6位数"
+		res.Code = -1
+		res.Massage = "密码为空或者少于6位数"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 		return
 	}
 	userInfo.Password = utils.ToMd5(userInfo.Password)
 	db := dao.DB.Where("telphone=? and password=?", userInfo.Telphone, userInfo.Password).First(&userInfo)
 	if db.RowsAffected == 0 {
-		res.code = -1
-		res.massage = "账号或者密码错误"
+		res.Code = -1
+		res.Massage = "账号或者密码错误"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 	}
-	if db.RowsAffected == 1 {
-		res.code = 0
-		res.massage = "登录成功"
+	if db.RowsAffected >= 1 {
+		res.Code = 0
+		res.Massage = "登录成功"
 		c.JSON(200, gin.H{
-			"code":    res.code,
-			"message": res.massage,
+			"Code":    res.Code,
+			"message": res.Massage,
 		})
 	}
 
