@@ -4,23 +4,20 @@ import (
 	"math/rand"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/kjor99/golesson/dao"
 	"github.com/kjor99/golesson/utils"
 )
-
-var DB *gorm.DB
 
 const str = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
 
 func Register(c *gin.Context) {
 
-	DB = dao.Conn()
+	dao.DB = dao.Conn()
 	var userInfo UserInfo
 	var res Respons
 
 	c.BindJSON(&userInfo)
-	defer DB.Close()
+	defer dao.DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
 		res.code = -1
@@ -45,11 +42,11 @@ func Register(c *gin.Context) {
 		userInfo.Username = randStr(10)
 	}
 
-	DB.AutoMigrate(&userInfo)
+	dao.DB.AutoMigrate(&userInfo)
 	//手机号码加密
 	userInfo.Password = utils.ToMd5(userInfo.Password)
 
-	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
+	db := dao.DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
 	if db.RowsAffected == 0 {
 		res.code = -1
 		res.massage = "该手机已注册"

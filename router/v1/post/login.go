@@ -8,13 +8,11 @@ import (
 
 func Login(c *gin.Context) {
 
-	DB = dao.Conn()
-
 	var userInfo UserInfo
 
 	var res Respons
 	c.BindJSON(&userInfo)
-	defer DB.Close()
+	defer dao.DB.Close()
 
 	if len(userInfo.Telphone) != 11 {
 		res.code = -1
@@ -36,7 +34,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	userInfo.Password = utils.ToMd5(userInfo.Password)
-	db := DB.Where("telphone=? and password=?", userInfo.Telphone, userInfo.Password).First(&userInfo)
+	db := dao.DB.Where("telphone=? and password=?", userInfo.Telphone, userInfo.Password).First(&userInfo)
 	if db.RowsAffected == 0 {
 		res.code = -1
 		res.massage = "账号或者密码错误"
