@@ -3,6 +3,7 @@ package post
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kjor99/golesson/dao"
+	"github.com/kjor99/golesson/utils"
 )
 
 func Login(c *gin.Context) {
@@ -34,7 +35,7 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
-	DB.AutoMigrate(&UserInfo{})
+	userInfo.Password = utils.ToMd5(userInfo.Password)
 	db := DB.Where("telphone=? and password=?", userInfo.Telphone, userInfo.Password).First(&userInfo)
 	if db.RowsAffected == 0 {
 		res.code = -1

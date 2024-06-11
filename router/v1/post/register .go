@@ -1,11 +1,14 @@
 package post
 
 import (
+	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/kjor99/golesson/dao"
+	"github.com/kjor99/golesson/utils"
 )
 
 var DB *gorm.DB
@@ -43,11 +46,17 @@ func Register(c *gin.Context) {
 	if len(userInfo.Username) == 0 {
 		userInfo.Username = randStr(10)
 	}
+
 	DB.AutoMigrate(&userInfo)
+	//手机号码加密
+	userInfo.Password = utils.ToMd5(userInfo.Password)
+	userInfo.CreateTime = time.Now()
+	fmt.Printf("userInfo.CreateTime: %v\n", userInfo.CreateTime)
 	db := DB.Where("telphone=?", userInfo.Telphone).FirstOrCreate(&userInfo)
 	if db.RowsAffected == 0 {
 		res.code = -1
 		res.massage = "该手机已注册"
+
 		c.JSON(200, gin.H{
 			"code":    res.code,
 			"message": res.massage,
